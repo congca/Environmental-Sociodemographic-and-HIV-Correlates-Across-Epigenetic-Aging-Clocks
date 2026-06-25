@@ -1,12 +1,4 @@
-# =========================================================
-# ALL RESULTS AS FIGURES
-# NO TABLES
-# MULTI-PANEL ONLY
-# =========================================================
-
-# =========================================================
-# SETUP
-# =========================================================
+ 
 
 import os
 import warnings
@@ -21,9 +13,7 @@ folders = [
 for folder in folders:
     os.makedirs(folder, exist_ok=True)
 
-# =========================================================
-# IMPORTS
-# =========================================================
+ 
 
 import pandas as pd
 import numpy as np
@@ -41,9 +31,7 @@ from statsmodels.stats.outliers_influence import (
     OLSInfluence
 )
 
-# =========================================================
-# STYLE
-# =========================================================
+ 
 
 plt.rcParams.update({
 
@@ -70,14 +58,13 @@ plt.rcParams.update({
 
 sns.set_style("white")
 
-# =========================================================
-# =========================================================
+ 
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
-# =========================================================
+ 
 # CLEAN VARIABLES
-# =========================================================
+ 
 
 df["white"] = df["white"].replace({
     1: "White",
@@ -89,10 +76,10 @@ df["hivatvisit"] = df["hivatvisit"].replace({
     0: "HIV-negative"
 })
 
-# =========================================================
+ 
 # FIGURE 1
 # REGIONAL HETEROGENEITY
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
@@ -100,10 +87,10 @@ fig, axes = plt.subplots(
     figsize=(14,10)
 )
 
-# =========================================================
+ 
 # PANEL A
 # GEAA
-# =========================================================
+ 
 
 sns.boxplot(
     data=df,
@@ -126,11 +113,9 @@ sns.stripplot(
 
 axes[0,0].set_title("A. GEAA by Region")
 
-# =========================================================
-# PANEL B
+ # PANEL B
 # PM2.5
-# =========================================================
-
+ 
 sns.boxplot(
     data=df,
     x="region",
@@ -152,10 +137,9 @@ sns.stripplot(
 
 axes[0,1].set_title("B. PM2.5 by Region")
 
-# =========================================================
-# PANEL C
+ # PANEL C
 # SMOKING
-# =========================================================
+ 
 
 sns.boxplot(
     data=df,
@@ -178,11 +162,9 @@ sns.stripplot(
 
 axes[1,0].set_title("C. Smoking Pack-Years")
 
-# =========================================================
-# PANEL D
+ # PANEL D
 # EDUCATION
-# =========================================================
-
+ 
 sns.boxplot(
     data=df,
     x="region",
@@ -212,10 +194,9 @@ plt.savefig(
 )
 
 plt.close()
-
-# =========================================================
+ 
 # MAIN MODEL
-# =========================================================
+ 
 
 model_main = smf.ols(
     """
@@ -240,22 +221,18 @@ model_main = smf.ols(
     data=df
 ).fit(cov_type='HC3')
 
-# =========================================================
-# FIGURE 2
+ # FIGURE 2
 # MAIN RESULTS
-# =========================================================
-
+ 
 fig, axes = plt.subplots(
     2,
     2,
     figsize=(14,10)
 )
 
-# =========================================================
-# PANEL A
+ # PANEL A
 # TEMPERATURE
-# =========================================================
-
+ 
 sns.scatterplot(
     data=df,
     x="Temperature",
@@ -275,11 +252,9 @@ sns.regplot(
 
 axes[0,0].set_title("A. Temperature and GEAA")
 
-# =========================================================
-# PANEL B
+ # PANEL B
 # PM2.5
-# =========================================================
-
+ 
 sns.scatterplot(
     data=df,
     x="SPWPM2.5",
@@ -299,11 +274,9 @@ sns.regplot(
 
 axes[0,1].set_title("B. PM2.5 and GEAA")
 
-# =========================================================
-# PANEL C
+ # PANEL C
 # CORRELATION HEATMAP
-# =========================================================
-
+ 
 corr_vars = [
 
     "Temperature",
@@ -326,11 +299,9 @@ sns.heatmap(
 
 axes[1,0].set_title("C. Correlation Matrix")
 
-# =========================================================
-# PANEL D
+ # PANEL D
 # MAIN EFFECTS FOREST
-# =========================================================
-
+ 
 coef_df = pd.DataFrame({
 
     "Variable": model_main.params.index,
@@ -387,11 +358,7 @@ plt.savefig(
 )
 
 plt.close()
-
-# =========================================================
-# FIGURE 3
-# MULTI-CLOCK COMPARISON
-# =========================================================
+ 
 
 outcomes = [
 
@@ -404,9 +371,7 @@ outcomes = [
 
 results = []
 
-# =========================================================
-# STANDARDIZE
-# =========================================================
+ 
 
 std_df = df.copy()
 
@@ -431,9 +396,7 @@ std_df[standardize_vars] = scaler.fit_transform(
     std_df[standardize_vars]
 )
 
-# =========================================================
-# LOOP
-# =========================================================
+ 
 
 for outcome in outcomes:
 
@@ -489,9 +452,8 @@ pivot_df = plot_df.pivot(
     values="Beta"
 )
 
-# =========================================================
-# MULTI-PANEL CLOCK FIGURE
-# =========================================================
+ 
+ 
 
 fig, axes = plt.subplots(
     2,
@@ -539,21 +501,14 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# FIGURE 4
-# SENSITIVITY ANALYSES
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
     2,
     figsize=(14,10)
 )
-
-# =========================================================
-# HIV ONLY
-# =========================================================
-
+ 
 df_hiv = df[
     df["hivatvisit"] == "HIV-positive"
 ]
@@ -598,10 +553,7 @@ sns.barplot(
 )
 
 axes[0,0].set_title("A. HIV-Only Model")
-
-# =========================================================
-# REMOVE EXTREME SMOKERS
-# =========================================================
+ 
 
 df_sens = df[
     df["cum_pkyear"] <
@@ -651,9 +603,7 @@ sns.barplot(
 
 axes[0,1].set_title("B. Excluding Extreme Smokers")
 
-# =========================================================
-# VIF
-# =========================================================
+ 
 
 X = df[[
     "Temperature",
@@ -689,9 +639,7 @@ sns.barplot(
 
 axes[1,0].set_title("C. Variance Inflation Factors")
 
-# =========================================================
-# COOK DISTANCE
-# =========================================================
+ 
 
 influence = OLSInfluence(model_main)
 
@@ -713,9 +661,7 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# SUPPLEMENT
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
@@ -749,17 +695,9 @@ plt.savefig(
 
 plt.close()
 
-print("\n======================================")
-print("ALL PUBLICATION FIGURES COMPLETED")
-print("======================================")
+ 
 
-# =========================================================
-# ALL RESULTS AS MANUSCRIPT-GRADE MULTI-PANEL FIGURES
-# =========================================================
-
-# =========================================================
-# SETUP
-# =========================================================
+ 
 
 warnings.filterwarnings("ignore")
 
@@ -771,18 +709,12 @@ folders = [
 for folder in folders:
     os.makedirs(folder, exist_ok=True)
 
-# =========================================================
-# IMPORTS
-# =========================================================
-
+ 
     variance_inflation_factor,
     OLSInfluence
 )
 
-# =========================================================
-# STYLE
-# =========================================================
-
+ 
 plt.rcParams.update({
 
     "font.family": "sans-serif",
@@ -808,14 +740,11 @@ plt.rcParams.update({
 
 sns.set_style("white")
 
-# =========================================================
-# =========================================================
+ 
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
-# =========================================================
-# CLEAN VARIABLES
-# =========================================================
+ 
 
 df["white"] = df["white"].replace({
     1: "White",
@@ -827,12 +756,10 @@ df["hivatvisit"] = df["hivatvisit"].replace({
     0: "HIV-negative"
 })
 
-# =========================================================
-# =========================================================
+ 
 # FIGURE A
 # REGIONAL + SOCIAL + ENVIRONMENTAL HETEROGENEITY
-# =========================================================
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
@@ -840,11 +767,7 @@ fig, axes = plt.subplots(
     figsize=(18,10)
 )
 
-# =========================================================
-# PANEL A
-# GEAA
-# =========================================================
-
+ 
 sns.boxplot(
     data=df,
     x="region",
@@ -869,11 +792,7 @@ axes[0,0].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL B
-# TEMPERATURE
-# =========================================================
-
+ 
 sns.violinplot(
     data=df,
     x="region",
@@ -886,11 +805,7 @@ axes[0,1].set_title(
     "Temperature Exposure by Region",
     fontweight="bold"
 )
-
-# =========================================================
-# PANEL C
-# PM2.5
-# =========================================================
+ 
 
 sns.violinplot(
     data=df,
@@ -905,11 +820,7 @@ axes[0,2].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL D
-# EDUCATION
-# =========================================================
-
+ 
 sns.boxplot(
     data=df,
     x="region",
@@ -923,10 +834,7 @@ axes[1,0].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL E
-# SMOKING
-# =========================================================
+ 
 
 sns.boxplot(
     data=df,
@@ -941,10 +849,8 @@ axes[1,1].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL F
-# HEATMAP
-# =========================================================
+ 
+ 
 
 heatmap_data = df.groupby("region")[[
     "Temperature",
@@ -990,13 +896,9 @@ plt.savefig(
 )
 
 plt.close()
-
-# =========================================================
-# =========================================================
+ 
 # MAIN MODEL
-# =========================================================
-# =========================================================
-
+ 
 model_main = smf.ols(
     """
     geaa ~
@@ -1020,9 +922,8 @@ model_main = smf.ols(
     data=df
 ).fit(cov_type='HC3')
 
-# =========================================================
 # MAIN COEFFICIENTS
-# =========================================================
+ 
 
 coef_df = pd.DataFrame({
 
@@ -1041,9 +942,9 @@ coef_df = coef_df[
     coef_df["Variable"] != "Intercept"
 ]
 
-# =========================================================
+ 
 # STANDARDIZED MODEL
-# =========================================================
+ 
 
 std_df = df.copy()
 
@@ -1086,12 +987,10 @@ std_model = smf.ols(
     data=std_df
 ).fit(cov_type='HC3')
 
-# =========================================================
-# =========================================================
+ 
 # FIGURE B
 # ADJUSTED ASSOCIATIONS + ROBUSTNESS
-# =========================================================
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
@@ -1099,11 +998,10 @@ fig, axes = plt.subplots(
     figsize=(22,10)
 )
 
-# =========================================================
+ 
 # PANEL A
 # TEMPERATURE
-# =========================================================
-
+ 
 sns.regplot(
     data=df,
     x="Temperature",
@@ -1118,10 +1016,10 @@ axes[0,0].set_title(
     fontweight="bold"
 )
 
-# =========================================================
+ 
 # PANEL B
 # PM2.5
-# =========================================================
+ 
 
 sns.regplot(
     data=df,
@@ -1137,11 +1035,9 @@ axes[0,1].set_title(
     fontweight="bold"
 )
 
-# =========================================================
+ 
 # PANEL C
-# FOREST
-# =========================================================
-
+# FOREST 
 coef_plot = coef_df.sort_values("Beta")
 
 y_pos = np.arange(len(coef_plot))
@@ -1176,10 +1072,10 @@ axes[0,2].set_title(
     fontweight="bold"
 )
 
-# =========================================================
+ 
 # PANEL D
 # STANDARDIZED BETAS
-# =========================================================
+ 
 
 std_coef = pd.DataFrame({
 
@@ -1204,10 +1100,9 @@ axes[0,3].set_title(
     fontweight="bold"
 )
 
-# =========================================================
+ 
 # MULTI-CLOCK
-# =========================================================
-
+ 
 outcomes = [
 
     "geaa",
@@ -1272,11 +1167,9 @@ pivot_df = multi_plot.pivot(
     values="Beta"
 )
 
-# =========================================================
-# PANEL E
+ # PANEL E
 # MULTICLOCK HEATMAP
-# =========================================================
-
+ 
 sns.heatmap(
     pivot_df,
     cmap="coolwarm",
@@ -1292,11 +1185,9 @@ axes[1,0].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL F
+ # PANEL F
 # HIV ONLY
-# =========================================================
-
+ 
 df_hiv = df[
     df["hivatvisit"] == "HIV-positive"
 ]
@@ -1345,11 +1236,9 @@ axes[1,1].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL G
+ # PANEL G
 # RESIDUALS
-# =========================================================
-
+ 
 sns.residplot(
     x=model_main.fittedvalues,
     y=model_main.resid,
@@ -1362,11 +1251,9 @@ axes[1,2].set_title(
     fontweight="bold"
 )
 
-# =========================================================
-# PANEL H
+ # PANEL H
 # QQ PLOT
-# =========================================================
-
+ 
 sm.qqplot(
     model_main.resid,
     line='45',
@@ -1387,18 +1274,9 @@ plt.savefig(
 
 plt.close()
 
-print("\n====================================")
-print("FINAL MANUSCRIPT FIGURES COMPLETED")
-print("====================================")
+ 
 
-# =========================================================
-# HIGH-END MANUSCRIPT FLOWCHART
-# JAMA / NATURE MEDICINE STYLE
-# =========================================================
-
-# =========================================================
-# FIGURE
-# =========================================================
+ 
 
 fig, ax = plt.subplots(
     figsize=(16,8)
@@ -1408,10 +1286,7 @@ ax.set_xlim(0, 18)
 ax.set_ylim(0, 10)
 
 ax.axis("off")
-
-# =========================================================
-# STYLE
-# =========================================================
+ 
 
 main_box = dict(
     boxstyle="round,pad=0.5",
@@ -1427,9 +1302,6 @@ final_box = dict(
     linewidth=2
 )
 
-# =========================================================
-# TITLE
-# =========================================================
 
 ax.text(
     9,
@@ -1443,10 +1315,9 @@ ax.text(
     fontsize=18,
     fontweight="bold"
 )
-
-# =========================================================
+ 
 # TOP ROW
-# =========================================================
+ 
 
 ax.text(
     2.5,
@@ -1523,10 +1394,9 @@ ax.text(
 
     bbox=main_box
 )
-
-# =========================================================
+ 
 # SECOND ROW
-# =========================================================
+ 
 
 ax.text(
     6,
@@ -1566,10 +1436,9 @@ ax.text(
     bbox=main_box
 )
 
-# =========================================================
+ 
 # FINAL INTERPRETATION
-# =========================================================
-
+ 
 ax.text(
     9,
     1,
@@ -1587,10 +1456,8 @@ after multivariable adjustment""",
     bbox=final_box
 )
 
-# =========================================================
-# ARROWS
-# =========================================================
-
+ # ARROWS
+ 
 arrow = dict(
     arrowstyle="-|>",
     lw=1.8,
@@ -1652,10 +1519,8 @@ ax.annotate(
     arrowprops=arrow
 )
 
-# =========================================================
-# SAVE
-# =========================================================
-
+ # SAVE
+ 
 plt.tight_layout()
 
 plt.savefig(
@@ -1668,14 +1533,8 @@ plt.close()
 
 print("High-end flowchart exported.")
 
-# =========================================================
-# SUPPLEMENTARY PIPELINE FIGURE
-# JAMA / NATURE MEDICINE STYLE
-# =========================================================
-
-# =========================================================
-# FIGURE
-# =========================================================
+ 
+ 
 
 fig, ax = plt.subplots(
     figsize=(18,10)
@@ -1686,10 +1545,9 @@ ax.set_ylim(0, 14)
 
 ax.axis("off")
 
-# =========================================================
+ 
 # STYLE
-# =========================================================
-
+ 
 main_box = dict(
     boxstyle="round,pad=0.5",
     facecolor="#F8F8F8",
@@ -1704,9 +1562,9 @@ final_box = dict(
     linewidth=2
 )
 
-# =========================================================
+ 
 # TITLE
-# =========================================================
+ 
 
 ax.text(
     10,
@@ -1721,15 +1579,12 @@ ax.text(
     fontweight="bold"
 )
 
-# =========================================================
-# ROW 1
-# =========================================================
+ 
 
 ax.text(
     2.5,
     11,
-
-    """Raw Cohort Data
+ 
 
 • HIV cohort records
 • Clinical variables
@@ -1748,12 +1603,9 @@ ax.text(
     7,
     11,
 
-    """Environmental Integration
+ 
 
-• NCEI climate data
-• EPA air pollution data
-• Regional exposure linkage""",
-
+ 
     ha="center",
     va="center",
 
@@ -1766,13 +1618,7 @@ ax.text(
     11.5,
     11,
 
-    """Data Preprocessing
-
-• Visit 4 selection
-• Variable harmonization
-• Missing value imputation
-• Exposure standardization""",
-
+  
     ha="center",
     va="center",
 
@@ -1785,12 +1631,9 @@ ax.text(
     16,
     11,
 
-    """Analysis Dataset
+ 
 
-• 400 participants
-• Regional stratification
-• Integrated environmental
-  and clinical dataset""",
+ 
 
     ha="center",
     va="center",
@@ -1800,20 +1643,15 @@ ax.text(
     bbox=main_box
 )
 
-# =========================================================
-# ROW 2
-# =========================================================
+ 
 
 ax.text(
     4,
     6.5,
 
-    """Descriptive Characterization
+ 
 
-• Exposure distributions
-• Regional heterogeneity
-• Smoking burden
-• Educational attainment""",
+ 
 
     ha="center",
     va="center",
@@ -1827,7 +1665,7 @@ ax.text(
     9,
     6.5,
 
-    """Primary Regression Models
+ 
 
 Outcome:
 • GEAA
@@ -1850,14 +1688,9 @@ Covariates:
 ax.text(
     14,
     6.5,
+ 
 
-    """Robustness Analyses
-
-• Multi-clock analyses
-• HIV-only analyses
-• Excluding extreme smokers
-• Standardized effects""",
-
+ 
     ha="center",
     va="center",
 
@@ -1866,18 +1699,12 @@ ax.text(
     bbox=main_box
 )
 
-# =========================================================
-# FINAL INTERPRETATION
-# =========================================================
-
+ 
 ax.text(
     10,
     2,
 
-    """Regional and sociodemographic heterogeneity
-remained independently associated with
-epigenetic aging after multivariable adjustment""",
-
+ 
     ha="center",
     va="center",
 
@@ -1887,9 +1714,7 @@ epigenetic aging after multivariable adjustment""",
     bbox=final_box
 )
 
-# =========================================================
-# ARROWS
-# =========================================================
+ 
 
 arrow = dict(
     arrowstyle="-|>",
@@ -1966,9 +1791,7 @@ ax.annotate(
     arrowprops=arrow
 )
 
-# =========================================================
-# SAVE
-# =========================================================
+ 
 
 plt.tight_layout()
 
@@ -1981,22 +1804,9 @@ plt.savefig(
 plt.close()
 
 print("\nSupplementary workflow figure exported.")
-
-# =========================================================
-# MAIN FIGURE A
-# REGIONAL HETEROGENEITY
-# JAMA / NATURE MEDICINE STYLE
-# =========================================================
-
-# =========================================================
-# =========================================================
-
+ 
 df = pd.read_csv("final_analysis_dataset.csv")
-
-# =========================================================
-# BASIC SETTINGS
-# =========================================================
-
+ 
 os.makedirs("figures", exist_ok=True)
 
 plt.rcParams.update({
@@ -2018,9 +1828,7 @@ plt.rcParams.update({
 
 sns.set_style("whitegrid")
 
-# =========================================================
-# CLEAN REGION NAMES
-# =========================================================
+ 
 
 df["region"] = df["region"].replace({
 
@@ -2029,17 +1837,11 @@ df["region"] = df["region"].replace({
     "pittsburgh": "Pittsburgh"
 
 })
-
-# =========================================================
-# CREATE LOG SMOKING
-# =========================================================
+ 
 
 df["log_smoking"] = np.log1p(df["cum_pkyear"])
 
-# =========================================================
-# CREATE RACE VARIABLE
-# =========================================================
-
+ 
 # MODIFY THIS IF NEEDED
 # based on your coding
 
@@ -2055,9 +1857,7 @@ else:
 
     df["Race"] = df["white"]
 
-# =========================================================
-# FIGURE LAYOUT
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
 
@@ -2067,10 +1867,7 @@ fig, axes = plt.subplots(
     figsize=(20,12)
 )
 
-# =========================================================
-# PANEL A
-# GEAA
-# =========================================================
+ 
 
 ax = axes[0,0]
 
@@ -2131,10 +1928,7 @@ ax.set_xlabel("")
 
 ax.set_ylabel("GEAA")
 
-# =========================================================
-# PANEL B
-# TEMPERATURE
-# =========================================================
+ 
 
 ax = axes[0,1]
 
@@ -2160,11 +1954,7 @@ ax.set_title("B. Temperature Exposure by Region", fontweight="bold")
 ax.set_xlabel("")
 
 ax.set_ylabel("Temperature")
-
-# =========================================================
-# PANEL C
-# PM2.5
-# =========================================================
+ 
 
 ax = axes[0,2]
 
@@ -2191,10 +1981,7 @@ ax.set_xlabel("")
 
 ax.set_ylabel("PM2.5")
 
-# =========================================================
-# PANEL D
-# RACE COMPOSITION
-# =========================================================
+ 
 
 ax = axes[1,0]
 
@@ -2229,10 +2016,7 @@ ax.legend(
     frameon=False
 )
 
-# =========================================================
-# PANEL E
-# HIV STATUS
-# =========================================================
+ 
 
 ax = axes[1,1]
 
@@ -2283,11 +2067,7 @@ ax.set_title("E. HIV Status by Region", fontweight="bold")
 ax.set_ylabel("Percentage")
 
 ax.set_xlabel("")
-
-# =========================================================
-# PANEL F
-# SMOKING
-# =========================================================
+ 
 
 ax = axes[1,2]
 
@@ -2314,9 +2094,7 @@ ax.set_xlabel("")
 
 ax.set_ylabel("log(1 + cumulative pack-years)")
 
-# =========================================================
-# OVERALL TITLE
-# =========================================================
+ 
 
 plt.suptitle(
 
@@ -2329,19 +2107,14 @@ plt.suptitle(
     y=1.02
 )
 
-# =========================================================
-# CLEANUP
-# =========================================================
-
+ 
 for ax in axes.flatten():
 
     ax.spines["top"].set_visible(False)
 
     ax.spines["right"].set_visible(False)
 
-# =========================================================
-# SAVE
-# =========================================================
+ 
 
 plt.tight_layout()
 
@@ -2359,15 +2132,7 @@ plt.close()
 print("\nUpdated main figure exported.")
 print("Saved to: figures/Main_Figure_A_Updated.png")
 
-# =========================================================
-# MULTI-CLOCK INTEGRATED ANALYSIS
-# FINAL HIGH-RES 8-PANEL FIGURE
-# DATASET: final_analysis_dataset.csv
-# =========================================================
-
-# =========================================================
-# STYLE
-# =========================================================
+ 
 
 plt.style.use('ggplot')
 
@@ -2392,30 +2157,20 @@ plt.rcParams.update({
     "savefig.dpi": 600
 
 })
-
-# =========================================================
-# =========================================================
+ 
 
 os.makedirs("figures", exist_ok=True)
 
-# =========================================================
-# =========================================================
-
+ 
 df = pd.read_csv("final_analysis_dataset.csv")
-
-# =========================================================
-# CLEAN VARIABLE NAMES
-# =========================================================
+ 
 
 df = df.rename(columns={
 
     "SPWPM2.5": "SPWPM25"
 
 })
-
-# =========================================================
-# STANDARDIZE CONTINUOUS VARIABLES
-# =========================================================
+ 
 
 continuous_vars = [
 
@@ -2433,9 +2188,7 @@ for var in continuous_vars:
 
     df[f"z_{var}"] = scaler.fit_transform(df[[var]])
 
-# =========================================================
-# CLOCK DEFINITIONS
-# =========================================================
+ 
 
 clock_map = {
 
@@ -2446,15 +2199,11 @@ clock_map = {
 
 }
 
-# =========================================================
-# STORE RESULTS
-# =========================================================
+ 
 
 all_results = []
 
-# =========================================================
-# RUN MODELS
-# =========================================================
+ 
 
 for outcome in clock_map.keys():
 
@@ -2492,15 +2241,11 @@ for outcome in clock_map.keys():
 
     all_results.append(temp)
 
-# =========================================================
-# COMBINE RESULTS
-# =========================================================
+ 
 
 results_df = pd.concat(all_results)
 
-# =========================================================
-# CLEAN LABELS
-# =========================================================
+ 
 
 results_df["Variable"] = results_df["Variable"].replace({
 
@@ -2521,9 +2266,7 @@ results_df["Variable"] = results_df["Variable"].replace({
 
 })
 
-# =========================================================
-# KEEP IMPORTANT VARIABLES
-# =========================================================
+ 
 
 keep_vars = [
 
@@ -2546,10 +2289,7 @@ keep_vars = [
 results_df = results_df[
     results_df["Variable"].isin(keep_vars)
 ]
-
-# =========================================================
-# SIGNIFICANCE LABELS
-# =========================================================
+ 
 
 results_df["sig"] = results_df["Pvalue"].apply(
 
@@ -2561,9 +2301,7 @@ results_df["sig"] = results_df["Pvalue"].apply(
 
 )
 
-# =========================================================
-# FIGURE SETUP
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
 
@@ -2581,9 +2319,7 @@ fig.subplots_adjust(
 
 )
 
-# =========================================================
-# PANEL A — GEAA
-# =========================================================
+ 
 
 ax = axes[0,0]
 
@@ -2609,9 +2345,7 @@ ax.set_title("A. GEAA")
 ax.set_xlabel("Standardized Beta")
 ax.set_ylabel("")
 
-# =========================================================
-# PANEL B — EEAA
-# =========================================================
+ 
 
 ax = axes[0,1]
 
@@ -2637,9 +2371,7 @@ ax.set_title("B. EEAA")
 ax.set_xlabel("Standardized Beta")
 ax.set_ylabel("")
 
-# =========================================================
-# PANEL C — PEAA
-# =========================================================
+ 
 
 ax = axes[0,2]
 
@@ -2665,9 +2397,7 @@ ax.set_title("C. PEAA")
 ax.set_xlabel("Standardized Beta")
 ax.set_ylabel("")
 
-# =========================================================
-# PANEL D — DNAmTLadjAge
-# =========================================================
+ 
 
 ax = axes[0,3]
 
@@ -2692,10 +2422,7 @@ ax.axvline(0, linestyle='--', color='black')
 ax.set_title("D. DNAmTLadjAge")
 ax.set_xlabel("Standardized Beta")
 ax.set_ylabel("")
-
-# =========================================================
-# PANEL E — HEATMAP
-# =========================================================
+ 
 
 ax = axes[1,0]
 
@@ -2725,9 +2452,7 @@ sns.heatmap(
 
 ax.set_title("E. Cross-Clock Effect Sizes")
 
-# =========================================================
-# PANEL F — SIGNIFICANCE MAP
-# =========================================================
+ 
 
 ax = axes[1,1]
 
@@ -2762,10 +2487,7 @@ sns.heatmap(
 )
 
 ax.set_title("F. Significant Associations")
-
-# =========================================================
-# PANEL G — HIV EFFECT
-# =========================================================
+ 
 
 ax = axes[1,2]
 
@@ -2791,9 +2513,7 @@ ax.axhline(0, linestyle='--', color='black')
 ax.set_title("G. HIV Effects Across Clocks")
 ax.set_ylabel("Standardized Beta")
 
-# =========================================================
-# PANEL H — SMOKING EFFECT
-# =========================================================
+ 
 
 ax = axes[1,3]
 
@@ -2819,9 +2539,7 @@ ax.axhline(0, linestyle='--', color='black')
 ax.set_title("H. Smoking Effects Across Clocks")
 ax.set_ylabel("Standardized Beta")
 
-# =========================================================
-# GLOBAL TITLE
-# =========================================================
+ 
 
 plt.suptitle(
 
@@ -2831,9 +2549,7 @@ plt.suptitle(
 
 )
 
-# =========================================================
-# SAVE FIGURE
-# =========================================================
+ 
 
 plt.savefig(
 
@@ -2847,9 +2563,7 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# EXPORT RESULTS
-# =========================================================
+ 
 
 results_df.to_csv(
 
@@ -2860,41 +2574,17 @@ results_df.to_csv(
 )
 
 print("Analysis completed.")
-
-# =========================================================
-# FINAL MEMORY-OPTIMIZED JAMA-STYLE PIPELINE
-# FULL MULTI-CLOCK ANALYSIS
-#
-# Dataset:
-# final_analysis_dataset.csv
-#
-# ---------------------------------------------------------
-# tables/full_multiclock_results.csv
-#
-# figures/Figure1_Descriptive.pdf
-# figures/Figure2_Multiclock.pdf
-# figures/Figure3_Regression.pdf
-#
-# MEMORY SAFE VERSION
-# =========================================================
-
-# =========================================================
-# IMPORTS
-# =========================================================
+ 
 
 import gc
 
 from scipy import stats
 
-# =========================================================
-# =========================================================
-
+ 
 os.makedirs("figures", exist_ok=True)
 os.makedirs("tables", exist_ok=True)
 
-# =========================================================
-# STYLE
-# =========================================================
+ 
 
 plt.style.use("ggplot")
 
@@ -2913,16 +2603,13 @@ plt.rcParams.update({
     "axes.linewidth": 1.0
 })
 
-# =========================================================
-# =========================================================
+ 
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
 df.columns = df.columns.str.strip()
 
-# =========================================================
-# SAFE VARIABLE NAMES
-# =========================================================
+ 
 
 rename_cols = {}
 
@@ -2934,9 +2621,7 @@ if "Ozone" in df.columns:
 
 df = df.rename(columns=rename_cols)
 
-# =========================================================
-# CLOCKS
-# =========================================================
+ 
 
 clock_vars = [
 
@@ -2947,9 +2632,7 @@ clock_vars = [
     "aar"
 ]
 
-# =========================================================
-# STANDARDIZE VARIABLES
-# =========================================================
+ 
 
 continuous_vars = [
 
@@ -2969,10 +2652,7 @@ scaler = StandardScaler()
 for var in continuous_vars:
 
     df[f"z_{var}"] = scaler.fit_transform(df[[var]])
-
-# =========================================================
-# RUN MULTICLOCK MODELS
-# =========================================================
+ 
 
 all_results = []
 
@@ -3016,9 +2696,7 @@ for outcome in clock_vars:
 
 results = pd.concat(all_results)
 
-# =========================================================
-# CLEAN VARIABLE NAMES
-# =========================================================
+ 
 
 rename_vars = {
 
@@ -3047,10 +2725,7 @@ results = results[
     ~results["Variable"].str.contains("Intercept")
 ]
 
-# =========================================================
-# SIGNIFICANCE LABELS
-# =========================================================
-
+ 
 def stars(p):
 
     if p < 0.001:
@@ -3067,10 +2742,7 @@ def stars(p):
 
 results["sig"] = results["Pvalue"].apply(stars)
 
-# =========================================================
-# SAVE RESULTS
-# =========================================================
-
+ 
 results.to_csv(
 
     "tables/full_multiclock_results.csv",
@@ -3078,10 +2750,7 @@ results.to_csv(
     index=False
 )
 
-# =========================================================
-# FIGURE 1
-# DESCRIPTIVE PANEL
-# =========================================================
+  
 
 fig, axes = plt.subplots(
 
@@ -3091,9 +2760,7 @@ fig, axes = plt.subplots(
     figsize=(14,9)
 )
 
-# ---------------------------------------------------------
-# A
-# ---------------------------------------------------------
+ 
 
 sns.boxplot(
 
@@ -3109,10 +2776,7 @@ sns.boxplot(
 axes[0,0].set_title(
     "A. GEAA Across Regions"
 )
-
-# ---------------------------------------------------------
-# B
-# ---------------------------------------------------------
+ 
 
 sns.boxplot(
 
@@ -3128,11 +2792,7 @@ sns.boxplot(
 axes[0,1].set_title(
     "B. Temperature"
 )
-
-# ---------------------------------------------------------
-# C
-# ---------------------------------------------------------
-
+ 
 sns.boxplot(
 
     data=df,
@@ -3148,9 +2808,7 @@ axes[0,2].set_title(
     "C. PM2.5"
 )
 
-# ---------------------------------------------------------
-# D
-# ---------------------------------------------------------
+ 
 
 sns.boxplot(
 
@@ -3167,9 +2825,7 @@ axes[1,0].set_title(
     "D. NO2"
 )
 
-# ---------------------------------------------------------
-# E
-# ---------------------------------------------------------
+ 
 
 sns.boxplot(
 
@@ -3186,9 +2842,7 @@ axes[1,1].set_title(
     "E. Ozone"
 )
 
-# ---------------------------------------------------------
-# F
-# ---------------------------------------------------------
+ 
 
 sns.boxplot(
 
@@ -3223,10 +2877,9 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
-# FIGURE 2
+ # FIGURE 2
 # MULTICLOCK PANEL
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
 
@@ -3264,9 +2917,9 @@ colors = [
     "#CCB974"
 ]
 
-# ---------------------------------------------------------
+ 
 # CLOCK PANELS
-# ---------------------------------------------------------
+ 
 
 for idx, outcome in enumerate(clock_vars):
 
@@ -3303,9 +2956,9 @@ for idx, outcome in enumerate(clock_vars):
         f"{chr(65+idx)}. {outcome.upper()}"
     )
 
-# ---------------------------------------------------------
+ 
 # HEATMAP
-# ---------------------------------------------------------
+ 
 
 heatmap_df = results.pivot_table(
 
@@ -3347,11 +3000,9 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
-# FIGURE 3
+ # FIGURE 3
 # PRIMARY REGRESSION
-# =========================================================
-
+ 
 fig, axes = plt.subplots(
 
     2,
@@ -3360,9 +3011,9 @@ fig, axes = plt.subplots(
     figsize=(14,9)
 )
 
-# =========================================================
+
 # PRIMARY MODEL
-# =========================================================
+
 
 main_model = smf.ols(
 
@@ -3388,9 +3039,7 @@ main_model = smf.ols(
 
 ).fit(cov_type='HC3')
 
-# ---------------------------------------------------------
-# A
-# ---------------------------------------------------------
+ 
 
 sns.regplot(
 
@@ -3407,10 +3056,7 @@ sns.regplot(
 axes[0,0].set_title(
     "A. Temperature and GEAA"
 )
-
-# ---------------------------------------------------------
-# B
-# ---------------------------------------------------------
+ 
 
 sns.regplot(
 
@@ -3428,9 +3074,6 @@ axes[0,1].set_title(
     "B. PM2.5 and GEAA"
 )
 
-# ---------------------------------------------------------
-# C
-# ---------------------------------------------------------
 
 coef_df = pd.DataFrame({
 
@@ -3467,9 +3110,7 @@ axes[0,2].set_title(
     "C. Adjusted Model Effects"
 )
 
-# ---------------------------------------------------------
-# D
-# ---------------------------------------------------------
+
 
 resid = main_model.resid
 fitted = main_model.fittedvalues
@@ -3497,9 +3138,6 @@ axes[1,0].set_title(
     "D. Residual Diagnostics"
 )
 
-# ---------------------------------------------------------
-# E
-# ---------------------------------------------------------
 
 stats.probplot(
 
@@ -3514,9 +3152,6 @@ axes[1,1].set_title(
     "E. QQ Plot"
 )
 
-# ---------------------------------------------------------
-# F
-# ---------------------------------------------------------
 
 sig_df = results.pivot_table(
 
@@ -3560,9 +3195,7 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
-# DONE
-# =========================================================
+
 
 print("\nALL ANALYSES COMPLETED\n")
 
@@ -3574,16 +3207,10 @@ print("figures/Figure1_Descriptive.pdf")
 print("figures/Figure2_Multiclock.pdf")
 print("figures/Figure3_Regression.pdf")
 
-# =========================================================
-# EXPORT ALL PDF FIGURES TO HIGH-QUALITY PNG
-# MEMORY-SAFE VERSION
-# =========================================================
+
 
 from matplotlib.backends.backend_pdf import PdfPages
 
-# =========================================================
-# INPUT PDF FILES
-# =========================================================
 
 pdf_files = [
 
@@ -3592,8 +3219,7 @@ pdf_files = [
     "figures/Figure3_Regression.pdf"
 ]
 
-# =========================================================
-# =========================================================
+
 
 png_files = [
 
@@ -3602,12 +3228,8 @@ png_files = [
     "figures/Figure3_Regression.png"
 ]
 
-# =========================================================
-# SIMPLE RE-SAVE METHOD
-# =========================================================
-# Instead of rendering gigantic raster arrays,
-# directly regenerate lightweight PNG exports
-# =========================================================
+
+
 
 for pdf, png in zip(pdf_files, png_files):
 
@@ -3650,19 +3272,12 @@ for pdf, png in zip(pdf_files, png_files):
 
 print("\nPNG export completed.")
 
-# =========================================================
-# SMALLER LABELS + NO OVERFLOW
-# =========================================================
 
-# =========================================================
-# =========================================================
 
 os.makedirs("figures", exist_ok=True)
 os.makedirs("tables", exist_ok=True)
 
-# =========================================================
-# STYLE
-# =========================================================
+
 
 plt.style.use("ggplot")
 
@@ -3685,16 +3300,13 @@ plt.rcParams.update({
     "axes.linewidth": 0.8
 })
 
-# =========================================================
-# =========================================================
+
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
 df.columns = df.columns.str.strip()
 
-# =========================================================
-# SAFE VARIABLE NAMES
-# =========================================================
+
 
 rename_cols = {}
 
@@ -3706,9 +3318,7 @@ if "Ozone" in df.columns:
 
 df = df.rename(columns=rename_cols)
 
-# =========================================================
-# CLOCKS
-# =========================================================
+
 
 clock_vars = [
 
@@ -3719,9 +3329,7 @@ clock_vars = [
     "aar"
 ]
 
-# =========================================================
-# STANDARDIZE VARIABLES
-# =========================================================
+
 
 continuous_vars = [
 
@@ -3742,9 +3350,7 @@ for var in continuous_vars:
 
     df[f"z_{var}"] = scaler.fit_transform(df[[var]])
 
-# =========================================================
-# RUN MODELS
-# =========================================================
+
 
 all_results = []
 
@@ -3788,9 +3394,8 @@ for outcome in clock_vars:
 
 results = pd.concat(all_results)
 
-# =========================================================
 # CLEAN VARIABLE NAMES
-# =========================================================
+
 
 rename_vars = {
 
@@ -3819,9 +3424,9 @@ results = results[
     ~results["Variable"].str.contains("Intercept")
 ]
 
-# =========================================================
+
 # SAVE TABLE
-# =========================================================
+
 
 results.to_csv(
 
@@ -3830,9 +3435,8 @@ results.to_csv(
     index=False
 )
 
-# =========================================================
 # FIGURE 1
-# =========================================================
+
 
 fig, axes = plt.subplots(
 
@@ -3923,9 +3527,8 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
 # FIGURE 2
-# =========================================================
+
 
 fig, axes = plt.subplots(
 
@@ -4010,9 +3613,8 @@ for idx, outcome in enumerate(clock_vars):
         f"{chr(65+idx)}. {outcome.upper()}"
     )
 
-# =========================================================
+
 # HEATMAP
-# =========================================================
 
 heatmap_df = results.pivot_table(
 
@@ -4074,9 +3676,7 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
 # FIGURE 3
-# =========================================================
 
 fig, axes = plt.subplots(
 
@@ -4288,9 +3888,6 @@ plt.close()
 
 gc.collect()
 
-# =========================================================
-# DONE
-# =========================================================
 
 print("\nALL ANALYSES COMPLETED\n")
 
@@ -4302,40 +3899,6 @@ print("figures/Figure1_Descriptive.png")
 print("figures/Figure2_Multiclock.png")
 print("figures/Figure3_Regression.png")
 
-# =========================================================
-# UPDATED FULL MULTI-CLOCK ANALYSIS
-# FIXED FOR DNAmTLadjAge COLUMN
-# =========================================================
-
-# This version:
-# 1. Automatically detects DNAmTLadjAge naming
-# 2. Supports:
-#    geaa
-#    eeaa
-#    peaa
-#    aar
-#    DNAmTLadjAge
-# 3. Generates:
-#    - integrated 6-panel figure
-#    - regression table
-#    - significance stars
-# 4. Uses:
-#    Temperature
-#    PM2.5
-#    NO2
-#    Ozone
-#    SO2
-#    race
-#    BMI
-#    smoking
-#    education
-#    HIV
-#    region
-# =========================================================
-
-# =========================================================
-# STYLE
-# =========================================================
 
 plt.style.use("ggplot")
 
@@ -4356,20 +3919,13 @@ plt.rcParams.update({
     "figure.dpi": 300
 })
 
-# =========================================================
-# =========================================================
 
 os.makedirs("figures", exist_ok=True)
 os.makedirs("tables", exist_ok=True)
 
-# =========================================================
-# =========================================================
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
-# =========================================================
-# RENAME ENVIRONMENT VARIABLES
-# =========================================================
 
 rename_dict = {
 
@@ -4382,9 +3938,6 @@ rename_dict = {
 
 df = df.rename(columns=rename_dict)
 
-# =========================================================
-# AUTO-DETECT CLOCKS
-# =========================================================
 
 clock_candidates = {
 
@@ -4410,9 +3963,7 @@ for col, label in clock_candidates.items():
 print("\nDetected clocks:")
 print(CLOCKS)
 
-# =========================================================
-# STANDARDIZE CONTINUOUS VARIABLES
-# =========================================================
+
 
 continuous_vars = [
 
@@ -4439,9 +3990,7 @@ df[[f"z_{v}" for v in continuous_vars]] = scaler.fit_transform(
     df[continuous_vars]
 )
 
-# =========================================================
-# RUN REGRESSIONS
-# =========================================================
+
 
 results = []
 
@@ -4490,9 +4039,7 @@ for outcome_var, outcome_name in CLOCKS.items():
 
 results_df = pd.concat(results)
 
-# =========================================================
-# CLEAN LABELS
-# =========================================================
+
 
 label_map = {
 
@@ -4521,9 +4068,6 @@ results_df = results_df[
     results_df["Variable"] != "Intercept"
 ]
 
-# =========================================================
-# SIGNIFICANCE STARS
-# =========================================================
 
 def stars(p):
 
@@ -4541,9 +4085,7 @@ def stars(p):
 
 results_df["sig"] = results_df["Pvalue"].apply(stars)
 
-# =========================================================
-# SAVE TABLE
-# =========================================================
+
 
 results_df.to_csv(
 
@@ -4553,9 +4095,7 @@ results_df.to_csv(
 
 )
 
-# =========================================================
-# VARIABLES TO PLOT
-# =========================================================
+
 
 plot_vars = [
 
@@ -4578,9 +4118,7 @@ plot_vars = [
 
 ]
 
-# =========================================================
-# FIGURE
-# =========================================================
+
 
 fig, axes = plt.subplots(
 
@@ -4593,9 +4131,7 @@ fig, axes = plt.subplots(
 
 axes = axes.flatten()
 
-# =========================================================
-# CLOCK PANELS
-# =========================================================
+
 
 palette_list = [
 
@@ -4665,9 +4201,6 @@ for i, outcome in enumerate(CLOCKS.values()):
 
     )
 
-# =========================================================
-# HEATMAP
-# =========================================================
 
 heatmap_df = results_df.pivot_table(
 
@@ -4719,9 +4252,7 @@ axes[-1].tick_params(
 
 )
 
-# =========================================================
-# TITLE
-# =========================================================
+
 
 plt.suptitle(
 
@@ -4738,9 +4269,7 @@ plt.tight_layout(
 
 )
 
-# =========================================================
-# SAVE FIGURE
-# =========================================================
+
 
 plt.savefig(
 
@@ -4752,9 +4281,7 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# DONE
-# =========================================================
+
 
 print("\nDONE.")
 
@@ -4764,27 +4291,21 @@ print("figures/Figure_MultiClock_Integrated.png")
 print("\nSaved table:")
 print("tables/MultiClock_Results.csv")
 
-# =========================================================
-# INTEGRATED ROBUSTNESS + INTERACTION ANALYSES
-# =========================================================
+
 
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.stats.multitest import multipletests
 
-# =========================================================
-# =========================================================
+
 
 os.makedirs("results", exist_ok=True)
 os.makedirs("figures", exist_ok=True)
 
-# =========================================================
-# =========================================================
+
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
-# =========================================================
-# CLEAN VARIABLE NAMES
-# =========================================================
+
 
 df = df.rename(columns={
 
@@ -4795,9 +4316,7 @@ df = df.rename(columns={
 
 })
 
-# =========================================================
-# STANDARDIZE CONTINUOUS VARIABLES
-# =========================================================
+
 
 continuous_vars = [
 
@@ -4818,9 +4337,7 @@ for col in continuous_vars:
         df[col] - df[col].mean()
     ) / df[col].std()
 
-# =========================================================
-# HIV STATUS
-# =========================================================
+
 
 if "hivatvisit" in df.columns:
 
@@ -4830,9 +4347,6 @@ elif "HIV_status" in df.columns:
 
     df["HIV"] = df["HIV_status"]
 
-# =========================================================
-# CLOCKS
-# =========================================================
 
 clocks = [
 
@@ -4844,21 +4358,16 @@ clocks = [
 
 ]
 
-# =========================================================
-# MAIN MODEL RESULTS
-# =========================================================
+
 
 main_results = []
 
-# =========================================================
-# INTERACTION RESULTS
-# =========================================================
+
 
 interaction_results = []
 
-# =========================================================
-# MAIN ANALYSIS
-# =========================================================
+
+
 
 for outcome in clocks:
 
@@ -4902,9 +4411,7 @@ for outcome in clocks:
 
         })
 
-# =========================================================
-# INTERACTION MODELS
-# =========================================================
+
 
 interaction_terms = [
 
@@ -4967,16 +4474,12 @@ for outcome in clocks:
 
             })
 
-# =========================================================
-# SAVE RESULTS
-# =========================================================
+
 
 main_df = pd.DataFrame(main_results)
 interaction_df = pd.DataFrame(interaction_results)
 
-# =========================================================
-# FDR CORRECTION
-# =========================================================
+
 
 main_df["FDR_P"] = multipletests(
     main_df["Pvalue"],
@@ -4988,9 +4491,7 @@ interaction_df["FDR_P"] = multipletests(
     method="fdr_bh"
 )[1]
 
-# =========================================================
-# SIGNIFICANCE LABELS
-# =========================================================
+
 
 def sig_label(p):
 
@@ -5009,9 +4510,7 @@ def sig_label(p):
 main_df["sig"] = main_df["FDR_P"].apply(sig_label)
 interaction_df["sig"] = interaction_df["FDR_P"].apply(sig_label)
 
-# =========================================================
-# SAVE CSV
-# =========================================================
+
 
 main_df.to_csv(
 
@@ -5027,9 +4526,7 @@ interaction_df.to_csv(
 
 )
 
-# =========================================================
-# CORRELATION MATRIX
-# =========================================================
+
 
 corr_vars = [
 
@@ -5052,9 +4549,7 @@ corr.to_csv(
 
 )
 
-# =========================================================
-# VIF
-# =========================================================
+
 
 X = df[[
 
@@ -5087,9 +4582,7 @@ vif_df.to_csv(
 
 )
 
-# =========================================================
-# PLOTTING STYLE
-# =========================================================
+
 
 plt.style.use("ggplot")
 
@@ -5103,15 +4596,11 @@ plt.rcParams.update({
 
 })
 
-# =========================================================
-# FIGURE
-# =========================================================
+
 
 fig = plt.figure(figsize=(22, 14))
 
-# =========================================================
-# A. CORRELATION MATRIX
-# =========================================================
+
 
 ax1 = plt.subplot(231)
 
@@ -5127,9 +4616,7 @@ sns.heatmap(
 
 ax1.set_title("A. Correlation Matrix")
 
-# =========================================================
-# B. VIF
-# =========================================================
+
 
 ax2 = plt.subplot(232)
 
@@ -5146,9 +4633,7 @@ ax2.axvline(5, linestyle="--", color="black")
 
 ax2.set_title("B. Variance Inflation Factors")
 
-# =========================================================
-# C. INTERACTION EFFECTS
-# =========================================================
+
 
 ax3 = plt.subplot(233)
 
@@ -5175,9 +4660,7 @@ ax3.axvline(0, linestyle="--", color="black")
 
 ax3.set_title("C. HIV Interaction Effects")
 
-# =========================================================
-# D. FDR SIGNIFICANT RESULTS
-# =========================================================
+
 
 ax4 = plt.subplot(234)
 
@@ -5197,9 +4680,7 @@ ax4.axvline(0, linestyle="--", color="black")
 
 ax4.set_title("D. FDR-Significant Associations")
 
-# =========================================================
-# E. PM2.5 × HIV
-# =========================================================
+
 
 ax5 = plt.subplot(235)
 
@@ -5226,9 +4707,7 @@ sns.regplot(
 
 ax5.set_title("E. PM2.5 and GEAA by HIV")
 
-# =========================================================
-# F. NO2 × HIV
-# =========================================================
+
 
 ax6 = plt.subplot(236)
 
@@ -5255,9 +4734,7 @@ sns.regplot(
 
 ax6.set_title("F. NO2 and GEAA by HIV")
 
-# =========================================================
-# SAVE FIGURE
-# =========================================================
+
 
 plt.tight_layout()
 
