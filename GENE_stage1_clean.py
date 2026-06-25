@@ -9,17 +9,12 @@ import pandas as pd
 
 df = pd.read_csv('final_analysis_dataset.csv')
 
-# 查看数据的基本信息
+ 
 print(df.info())
 print(df.describe())
-print(df.isnull().sum())  # 检查缺失值
-# =========================================================
-# 02_analysis_figures.py
-# =========================================================
-
-# =========================================================
-# LOAD LIBRARIES
-# =========================================================
+print(df.isnull().sum())  
+ 
+ 
 
 import os
 
@@ -30,15 +25,12 @@ import seaborn as sns
 
 import statsmodels.formula.api as smf
 
-# =========================================================
-# =========================================================
+ 
 
 os.makedirs("figures", exist_ok=True)
 os.makedirs("tables", exist_ok=True)
 
-# =========================================================
-# GLOBAL FIGURE STYLE
-# =========================================================
+ 
 
 plt.rcParams.update({
 
@@ -64,31 +56,25 @@ plt.rcParams.update({
 
 sns.set_style("white")
 
-# =========================================================
-# LOAD CLEAN DATASET
-# =========================================================
+ 
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
 print("\nDataset Loaded")
 print(df.shape)
 
-# =========================================================
-# CLEAN TYPES
-# =========================================================
+ 
 
 df["region"] = df["region"].astype(str)
 
-# =========================================================
-# MAIN OUTCOME
-# =========================================================
+ 
 
 OUTCOME = "geaa"
 
-# =========================================================
+ 
 # TABLE 1
 # REGIONAL SUMMARY
-# =========================================================
+ 
 
 summary_table = df.groupby("region")[[
     "Temperature",
@@ -113,10 +99,9 @@ summary_table.to_csv(
 
 print("\nTable 1 exported")
 
-# =========================================================
+ 
 # MAIN ADJUSTED MODEL
-# =========================================================
-
+ 
 model = smf.ols(
     """
     geaa ~
@@ -135,11 +120,9 @@ model = smf.ols(
 ).fit()
 
 print(model.summary())
-
-# =========================================================
+ 
 # EXPORT MODEL RESULTS
-# =========================================================
-
+ 
 results_df = pd.DataFrame({
 
     "Variable": model.params.index,
@@ -157,10 +140,9 @@ results_df.to_csv(
 
 print("\nAdjusted model exported")
 
-# =========================================================
-# FIGURE 1
+ # FIGURE 1
 # GEAA DISTRIBUTION BY REGION
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(8,6))
 
@@ -207,12 +189,10 @@ plt.savefig(
 plt.close()
 
 print("Figure 1 exported")
-
-# =========================================================
+ 
 # FIGURE 2
 # TEMPERATURE vs GEAA
-# =========================================================
-
+ 
 g = sns.lmplot(
     data=df,
     x="Temperature",
@@ -248,9 +228,9 @@ plt.close()
 
 print("Figure 2 exported")
 
-# =========================================================
+ 
 # REGION-SPECIFIC MODELS
-# =========================================================
+ 
 
 regions = sorted(df["region"].unique())
 
@@ -297,11 +277,10 @@ forest_df.to_csv(
 
 print("\nRegion-specific results exported")
 
-# =========================================================
+ 
 # FIGURE 3
 # FOREST PLOT
-# =========================================================
-
+ 
 fig, ax = plt.subplots(figsize=(7,5))
 
 y_pos = np.arange(len(forest_df))
@@ -350,19 +329,18 @@ plt.close()
 
 print("Figure 3 exported")
 
-# =========================================================
+ 
 # FIGURE 4
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
     2,
     figsize=(14,10)
 )
-
-# =========================================================
+ 
 # PANEL A
-# =========================================================
+ 
 
 sns.boxplot(
     data=df,
@@ -374,9 +352,9 @@ sns.boxplot(
 
 axes[0,0].set_title("A. GEAA by Region")
 
-# =========================================================
+ 
 # PANEL B
-# =========================================================
+ 
 
 sns.scatterplot(
     data=df,
@@ -389,9 +367,9 @@ sns.scatterplot(
 
 axes[0,1].set_title("B. Temperature and GEAA")
 
-# =========================================================
+ 
 # PANEL C
-# =========================================================
+ 
 
 sns.scatterplot(
     data=df,
@@ -403,11 +381,9 @@ sns.scatterplot(
 )
 
 axes[1,0].set_title("C. PM2.5 and GEAA")
-
-# =========================================================
+ 
 # PANEL D
-# =========================================================
-
+ 
 corr_vars = [
     "Temperature",
     "SPWPM2.5",
@@ -430,9 +406,7 @@ sns.heatmap(
 
 axes[1,1].set_title("D. Correlation Matrix")
 
-# =========================================================
-# CLEANUP
-# =========================================================
+ 
 
 for ax in axes.flatten():
 
@@ -449,9 +423,9 @@ plt.close()
 
 print("Figure 4 exported")
 
-# =========================================================
+ 
 # SUPPLEMENTARY FIGURE
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(8,6))
 
@@ -491,44 +465,22 @@ plt.close()
 
 print("Supplementary figure exported")
 
-# =========================================================
+ 
 # CORRELATION MATRIX EXPORT
-# =========================================================
+ 
 
 corr.to_csv(
     "tables/Correlation_Matrix.csv"
 )
 
-# =========================================================
+ 
 # FINAL MESSAGE
-# =========================================================
-
-print("\n======================================")
-print("ANALYSIS PIPELINE COMPLETED")
-print("======================================")
-
-print("""
-
-FIGURES
---------
-figures/Figure1_GEAA_by_Region.png
-figures/Figure2_Temperature_GEAA.png
-figures/Figure3_ForestPlot.png
-figures/Figure4_Multipanel.png
-figures/Supplementary_EEAA.png
-
-TABLES
---------
-tables/Table1_Regional_Summary.csv
-tables/Adjusted_Model_Results.csv
-tables/Region_Specific_Effects.csv
-tables/Correlation_Matrix.csv
-
-""")
-# =========================================================
+ 
+ 
+ 
+ 
 # INTERACTION MODEL
-# =========================================================
-
+ 
 model_interaction = smf.ols(
     """
     geaa ~
@@ -544,9 +496,9 @@ model_interaction = smf.ols(
 ).fit()
 
 print(model_interaction.summary())
-# =========================================================
+ 
 # MAIN MODEL
-# =========================================================
+ 
 
 model_main = smf.ols(
     """
@@ -564,16 +516,14 @@ model_main = smf.ols(
 ).fit()
 
 print(model_main.summary())
-# =========================================================
-# =========================================================
-
+ 
 from statsmodels.stats.multitest import multipletests
 from statsmodels.stats.outliers_influence import OLSInfluence
 from sklearn.preprocessing import StandardScaler
 
-# =========================================================
+ 
 # STANDARDIZED VARIABLES
-# =========================================================
+ 
 
 standardize_vars = [
     "Temperature",
@@ -591,10 +541,9 @@ df_std = df.copy()
 df_std[standardize_vars] = scaler.fit_transform(
     df_std[standardize_vars]
 )
-
-# =========================================================
+ 
 # STANDARDIZED MODEL
-# =========================================================
+ 
 
 std_model = smf.ols(
     """
@@ -624,9 +573,9 @@ std_results.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # FDR CORRECTION
-# =========================================================
+ 
 
 results_df["FDR_Pvalue"] = multipletests(
     results_df["Pvalue"],
@@ -638,9 +587,9 @@ results_df.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # ADJUSTED PREDICTION GRID
-# =========================================================
+ 
 
 temp_seq = np.linspace(
     df["Temperature"].min(),
@@ -672,10 +621,10 @@ for region in df["region"].unique():
 
 predictions = pd.concat(prediction_frames)
 
-# =========================================================
+ 
 # FIGURE
 # ADJUSTED MARGINAL EFFECTS
-# =========================================================
+ 
 
 plt.figure(figsize=(8,6))
 
@@ -703,10 +652,9 @@ plt.savefig(
 )
 
 plt.close()
-
-# =========================================================
+ 
 # INFLUENCE DIAGNOSTICS
-# =========================================================
+ 
 
 influence = OLSInfluence(model_main)
 
@@ -731,11 +679,9 @@ plt.savefig(
 )
 
 plt.close()
-
-# =========================================================
+ 
 # HIGH INFLUENCE OBSERVATIONS
-# =========================================================
-
+ 
 high_influence = np.where(
     cooks > (4 / len(df))
 )[0]
@@ -750,10 +696,10 @@ pd.DataFrame({
     index=False
 )
 
-# =========================================================
+ 
 # SENSITIVITY ANALYSIS
 # REMOVE EXTREME SMOKERS
-# =========================================================
+ 
 
 df_sensitivity = df[
     df["cum_pkyear"] < df["cum_pkyear"].quantile(0.95)
@@ -788,10 +734,10 @@ sens_results.to_csv(
 )
 
 print("\nAdvanced analyses completed.")
-# =========================================================
+ 
 # CONTINUATION ANALYSIS PIPELINE
 # Robustness + Heterogeneity + Diagnostics
-# =========================================================
+ 
 
 import statsmodels.api as sm
 
@@ -800,10 +746,9 @@ from statsmodels.stats.outliers_influence import (
     OLSInfluence
 )
 
-# =========================================================
+ 
 # ROBUST INTERACTION MODEL
-# =========================================================
-
+ 
 model_interaction = smf.ols(
     """
     geaa ~
@@ -820,9 +765,9 @@ model_interaction = smf.ols(
 
 print(model_interaction.summary())
 
-# =========================================================
+ 
 # EXPORT INTERACTION RESULTS
-# =========================================================
+ 
 
 interaction_results = pd.DataFrame({
 
@@ -834,9 +779,9 @@ interaction_results = pd.DataFrame({
 
 })
 
-# =========================================================
+ 
 # FDR CORRECTION
-# =========================================================
+ 
 
 interaction_results["FDR_Pvalue"] = multipletests(
     interaction_results["Pvalue"],
@@ -848,9 +793,9 @@ interaction_results.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # ADJUSTED PREDICTIONS
-# =========================================================
+ 
 
 temp_seq = np.linspace(
     df["Temperature"].min(),
@@ -882,10 +827,10 @@ for region in df["region"].unique():
 
 predictions = pd.concat(prediction_frames)
 
-# =========================================================
+ 
 # FIGURE
 # ADJUSTED MARGINAL EFFECTS
-# =========================================================
+ 
 
 plt.figure(figsize=(8,6))
 
@@ -917,9 +862,9 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
+ 
 # REGION-SPECIFIC MODELS
-# =========================================================
+ 
 
 regions = sorted(df["region"].unique())
 
@@ -967,9 +912,9 @@ forest_df.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # FOREST PLOT
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(7,5))
 
@@ -1018,9 +963,9 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
+ 
 # VIF ANALYSIS
-# =========================================================
+ 
 
 X = df[[
     "Temperature",
@@ -1054,9 +999,8 @@ vif_df.to_csv(
     index=False
 )
 
-# =========================================================
-# STANDARDIZED BETAS
-# =========================================================
+  # STANDARDIZED BETAS
+ 
 
 standardize_vars = [
     "Temperature",
@@ -1103,9 +1047,9 @@ std_results.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # RESIDUAL DIAGNOSTICS
-# =========================================================
+ 
 
 plt.figure(figsize=(7,5))
 
@@ -1131,10 +1075,7 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# QQ PLOT
-# =========================================================
-
+ 
 fig = sm.qqplot(
     model_interaction.resid,
     line='45'
@@ -1149,9 +1090,8 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# COOK'S DISTANCE
-# =========================================================
+ 
+ 
 
 influence = OLSInfluence(model_interaction)
 
@@ -1178,9 +1118,9 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
+ 
 # HIV-ONLY SENSITIVITY ANALYSIS
-# =========================================================
+ 
 
 df_hiv = df[
     df["hivatvisit"] == "HIV-positive"
@@ -1213,9 +1153,9 @@ hiv_results.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # REMOVE EXTREME SMOKERS
-# =========================================================
+ 
 
 df_sens = df[
     df["cum_pkyear"] <
@@ -1249,17 +1189,7 @@ sens_results.to_csv(
     "tables/Sensitivity_NoExtremeSmokers.csv",
     index=False
 )
-
-print("\n===================================")
-print("CONTINUATION ANALYSES COMPLETE")
-print("===================================")
-# =========================================================
-# REGIONAL HETEROGENEITY HEATMAP
-# =========================================================
-
-# =========================================================
-# CREATE REGIONAL SUMMARY DATA
-# =========================================================
+ 
 
 heatmap_df = pd.DataFrame({
 
@@ -1313,10 +1243,8 @@ heatmap_df = pd.DataFrame({
     ]
 })
 
-# =========================================================
-# STANDARDIZE VALUES
-# =========================================================
-
+ # STANDARDIZE VALUES
+ 
 features = [
     "Temperature",
     "PM2.5",
@@ -1338,10 +1266,9 @@ scaled_df = pd.DataFrame(
 )
 
 scaled_df.index = heatmap_df["Region"]
-
-# =========================================================
+ 
 # PLOT
-# =========================================================
+ 
 
 plt.figure(figsize=(8,5))
 
@@ -1383,18 +1310,14 @@ plt.savefig(
 plt.close()
 
 print("Heatmap exported.")
-# =========================================================
+ 
 # MULTI-CLOCK REGRESSION ANALYSIS
-# =========================================================
-
-# =========================================================
-# =========================================================
-
+ 
 df = pd.read_csv("cleaned_visit4_imputed.csv")
 
-# =========================================================
+ 
 # CLEAN VARIABLES
-# =========================================================
+ 
 
 df["white"] = df["white"].map({
     1: "White",
@@ -1405,10 +1328,9 @@ df["hivatvisit"] = df["hivatvisit"].map({
     1: "HIV-positive",
     0: "HIV-negative"
 })
-
-# =========================================================
+ 
 # OUTCOMES
-# =========================================================
+ 
 
 outcomes = [
     "geaa",
@@ -1418,15 +1340,14 @@ outcomes = [
     "aar"
 ]
 
-# =========================================================
+ 
 # RESULTS STORAGE
-# =========================================================
+ 
 
 results = []
 
-# =========================================================
-# LOOP THROUGH CLOCKS
-# =========================================================
+ # LOOP THROUGH CLOCKS
+ 
 
 for outcome in outcomes:
 
@@ -1466,30 +1387,22 @@ for outcome in outcomes:
 
     results.append(temp)
 
-# =========================================================
+ 
 # COMBINE
-# =========================================================
+ 
 
 results_df = pd.concat(results)
 
-# =========================================================
+ 
 # FDR CORRECTION
-# =========================================================
-
+ 
 results_df["FDR_p"] = multipletests(
     results_df["Pvalue"],
     method="fdr_bh"
 )[1]
-
-# =========================================================
-# ROUND
-# =========================================================
-
+ 
 results_df = results_df.round(4)
-
-# =========================================================
-# SAVE
-# =========================================================
+ 
 
 results_df.to_csv(
     "MultiClock_Regression_Results.csv",
@@ -1499,8 +1412,7 @@ results_df.to_csv(
 print(results_df.head())
 
 print("\nResults exported.")
-
-# 可视化因变量的分布
+ 
 plt.figure(figsize=(10, 5))
 sns.histplot(df['aar'], bins=30, kde=True)
 plt.title('Distribution of AAR')
@@ -1508,7 +1420,7 @@ plt.xlabel('AAR')
 plt.ylabel('Frequency')
 plt.show()
 
-# 可视化因变量的分布
+ 
 plt.figure(figsize=(10, 5))
 sns.histplot(df['eeaa'], bins=30, kde=True)
 plt.title('Distribution of EEAA')
@@ -1516,7 +1428,7 @@ plt.xlabel('EEAA')
 plt.ylabel('Frequency')
 plt.show()
 
-# 可视化因变量的分布
+ 
 plt.figure(figsize=(10, 5))
 sns.histplot(df['peaa'], bins=30, kde=True)
 plt.title('Distribution of peaa')
@@ -1524,7 +1436,7 @@ plt.xlabel('peaa')
 plt.ylabel('Frequency')
 plt.show()
 
-# 可视化因变量的分布
+ 
 plt.figure(figsize=(10, 5))
 sns.histplot(df['geaa'], bins=30, kde=True)
 plt.title('Distribution of geaa')
@@ -1532,7 +1444,7 @@ plt.xlabel('geaa')
 plt.ylabel('Frequency')
 plt.show()
 
-# 可视化因变量的分布
+ 
 plt.figure(figsize=(10, 5))
 sns.histplot(df['dnamtladjage'], bins=30, kde=True)
 plt.title('Distribution of dnamtladjage')
@@ -1541,40 +1453,40 @@ plt.ylabel('Frequency')
 plt.show()
 import scipy.stats as stats
 
-# 定义因变量列表
+ 
 dependent_vars = ['aar', 'eeaa', 'peaa', 'geaa', 'dnamtladjage']
 
-# 创建子图
+ 
 fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(18, 10))
 axes = axes.flatten()
 
-# 绘制散点图 + 拟合线 + p值 + 图例
+ 
 for i, var in enumerate(dependent_vars):
     x = df['Ozone']
     y = df[var]
 
-    # 绘制散点
+ 
     axes[i].scatter(x, y, alpha=0.6, label='Data')
 
-    # 线性回归
+ 
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     line = slope * x + intercept
     axes[i].plot(x, line, color='red', label=f'Fit line')
 
-    # 添加标题和标签
+ 
     axes[i].set_title(f'Ozone vs {var}')
     axes[i].set_xlabel('Ozone')
     axes[i].set_ylabel(var)
     axes[i].grid(True)
 
-    # 添加 p 值注释
+ 
     axes[i].text(0.05, 0.95, f'p = {p_value:.3e}', transform=axes[i].transAxes,
                  fontsize=10, verticalalignment='top', bbox=dict(facecolor='white', alpha=0.6, edgecolor='gray'))
 
-    # 添加图例
+ 
     axes[i].legend()
 
-# 最后一个子图保留为 Ozone 分布或留空
+ 
 sns.histplot(df['Ozone'], bins=30, kde=True, ax=axes[-1], color='red', alpha=0.5)
 axes[-1].set_title('Ozone Distribution')
 axes[-1].set_xlabel('Ozone')
@@ -1584,44 +1496,44 @@ axes[-1].grid(True)
 plt.tight_layout()
 plt.show()
 
-# 设置Seaborn风格
+ 
 sns.set(style="whitegrid")
 
-# 定义因变量列表
+ 
 dependent_vars = ['aar', 'eeaa', 'peaa', 'geaa', 'dnamtladjage']
 
-# 创建子图
+ 
 fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(18, 10))
 axes = axes.flatten()
 
-# 绘制每个因变量与 Temperature 的散点图 + 拟合线 + p 值
+ 
 for i, var in enumerate(dependent_vars):
     x = df['Temperature']
     y = df[var]
 
-    # Seaborn散点图
+ 
     sns.scatterplot(x=x, y=y, ax=axes[i], alpha=0.6, label='Data')
 
-    # 线性回归
+ 
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     line = slope * x + intercept
     axes[i].plot(x, line, color='red', label='Fit line')
 
-    # 设置标题与轴
+ 
     axes[i].set_title(f'Temperature vs {var}')
     axes[i].set_xlabel('Temperature')
     axes[i].set_ylabel(var)
     axes[i].grid(True)
 
-    # 添加 p 值注释
+  
     axes[i].text(0.05, 0.95, f'p = {p_value:.3e}', transform=axes[i].transAxes,
                  fontsize=10, verticalalignment='top',
                  bbox=dict(facecolor='white', alpha=0.6, edgecolor='gray'))
 
-    # 添加图例
+ 
     axes[i].legend()
 
-# 最后一幅图：Temperature 分布图
+ 
 sns.histplot(df['Temperature'], bins=30, kde=True, ax=axes[-1], color='red', alpha=0.5)
 axes[-1].set_title('Temperature Distribution')
 axes[-1].set_xlabel('Temperature')
@@ -1634,7 +1546,7 @@ plt.show()
 from statsmodels.formula.api import ols
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-# 替换地理位置
+ 
 location_mapping = {
     0: 'Baltimore',
     0.333333333: 'Chicago',
@@ -1644,29 +1556,29 @@ location_mapping = {
 df[df.columns[0]] = df[df.columns[0]].replace(location_mapping)
 group_col = df.columns[0]
 
-# 设置风格
+ 
 sns.set(style="whitegrid")
 
-# 因变量
+ 
 dependent_vars = ['aar', 'eeaa', 'peaa', 'geaa', 'dnamtladjage']
 
-# 创建图
+ 
 fig, axes = plt.subplots(nrows=5, ncols=2, figsize=(18, 22))
 axes = axes.flatten()
 
-# 遍历变量画图 + 添加p值 + Tukey分组差异
+ 
 for i, var in enumerate(dependent_vars):
     ax_box = axes[i]
     ax_violin = axes[i + len(dependent_vars)]
 
-    # 1. 箱线图 + 均值 ± SE
+ 
     sns.boxplot(data=df, x=group_col, y=var, ax=ax_box, palette="Set2", showfliers=False)
     means = df.groupby(group_col)[var].mean()
     sems = df.groupby(group_col)[var].sem()
     x_pos = range(len(means))
     ax_box.errorbar(x=x_pos, y=means, yerr=sems, fmt='o', color='black', capsize=5, label='Mean ± SE')
 
-    # 2. ANOVA 总体 p 值
+ 
     model = ols(f'{var} ~ C({group_col})', data=df).fit()
     anova_table = sm.stats.anova_lm(model, typ=2)
     pval = anova_table['PR(>F)'][0]
@@ -1679,7 +1591,7 @@ for i, var in enumerate(dependent_vars):
     ax_box.legend()
     ax_box.grid(True)
 
-    # 3. Violin plot + 同样标注
+ 
     sns.violinplot(data=df, x=group_col, y=var, ax=ax_violin, palette="Set2", inner="quartile")
     ax_violin.text(0.05, 0.95, f'ANOVA p = {pval:.3e}', transform=ax_violin.transAxes,
                    fontsize=10, verticalalignment='top',
@@ -1689,7 +1601,7 @@ for i, var in enumerate(dependent_vars):
     ax_violin.set_ylabel(var)
     ax_violin.grid(True)
 
-    # 4. 可选：Tukey HSD 显著性分组结果打印
+ 
     tukey = pairwise_tukeyhsd(endog=df[var], groups=df[group_col], alpha=0.05)
     print(f'\nTukey HSD results for {var}:\n{tukey.summary()}')
 
@@ -1698,34 +1610,33 @@ plt.savefig('Location_with_Pvalues.png', dpi=300)
 plt.show()
 from scipy import stats
 
-# 假设 df 是你的数据框
-# 计算 95th 百分位数
+ 
 precipitation_threshold = df['Precipitation'].quantile(0.95)
 temperature_threshold = df['Temperature'].quantile(0.95)
 
-# 添加极端天气标签
+ 
 df['Extreme_Precipitation'] = df['Precipitation'] > precipitation_threshold
 df['Extreme_Temperature'] = df['Temperature'] > temperature_threshold
 
-# 因变量列表
+ 
 dependent_vars = ['aar', 'eeaa', 'peaa', 'geaa', 'dnamtladjage']
 
-# 创建图
+ 
 fig, axes = plt.subplots(nrows=5, ncols=2, figsize=(18, 22))
 axes = axes.flatten()
 
-# 可视化极端降水影响
+ 
 for i, var in enumerate(dependent_vars):
     ax = axes[i]
     sns.boxplot(data=df, x='Extreme_Precipitation', y=var, ax=ax, palette="Set2", showfliers=False)
 
-    # 计算每组均值 ± 标准误
+ 
     means = df.groupby('Extreme_Precipitation')[var].mean()
     sems = df.groupby('Extreme_Precipitation')[var].sem()
     x_pos = [0, 1]
     ax.errorbar(x=x_pos, y=means, yerr=sems, fmt='o', color='black', capsize=5, label='Mean ± SE')
 
-    # t检验
+ 
     group1 = df[df['Extreme_Precipitation'] == False][var]
     group2 = df[df['Extreme_Precipitation'] == True][var]
     t_stat, p_val = stats.ttest_ind(group1, group2, equal_var=False)
@@ -1739,18 +1650,17 @@ for i, var in enumerate(dependent_vars):
     ax.grid(True)
     ax.legend()
 
-# 可视化极端温度影响
-for i, var in enumerate(dependent_vars):
+ for i, var in enumerate(dependent_vars):
     ax = axes[i + len(dependent_vars)]
     sns.boxplot(data=df, x='Extreme_Temperature', y=var, ax=ax, palette="Set2", showfliers=False)
 
-    # 计算均值 ± 标准误
+ 
     means = df.groupby('Extreme_Temperature')[var].mean()
     sems = df.groupby('Extreme_Temperature')[var].sem()
     x_pos = [0, 1]
     ax.errorbar(x=x_pos, y=means, yerr=sems, fmt='o', color='black', capsize=5, label='Mean ± SE')
 
-    # t检验
+ 
     group1 = df[df['Extreme_Temperature'] == False][var]
     group2 = df[df['Extreme_Temperature'] == True][var]
     t_stat, p_val = stats.ttest_ind(group1, group2, equal_var=False)
@@ -1768,35 +1678,34 @@ plt.tight_layout()
 plt.savefig('Extreme_Weather_Impact_with_Pvalues.png', dpi=300)
 plt.show()
 
-# 计算极端值阈值
+ 
 precipitation_threshold = df['Precipitation'].quantile(0.95)
 temperature_threshold = df['Temperature'].quantile(0.95)
 
-# 添加极端天气标签
-df['Extreme_Precipitation'] = df['Precipitation'] > precipitation_threshold
+ df['Extreme_Precipitation'] = df['Precipitation'] > precipitation_threshold
 df['Extreme_Temperature'] = df['Temperature'] > temperature_threshold
 
-# 提取城市列表
+ 
 cities = df[df.columns[0]].unique()
 
-# 创建图
+ 
 fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(18, 22))
 axes = axes.flatten()
 
-# --- 1. 每城市 极端降水 vs GEAA ---
+ 
 for i, city in enumerate(cities):
     city_data = df[df[df.columns[0]] == city]
     ax = axes[i]
 
     sns.boxplot(data=city_data, x='Extreme_Precipitation', y='geaa', ax=ax, palette="Set2", showfliers=False)
 
-    # 添加误差条
+ 
     means = city_data.groupby('Extreme_Precipitation')['geaa'].mean()
     sems = city_data.groupby('Extreme_Precipitation')['geaa'].sem()
     x_pos = [0, 1]
     ax.errorbar(x=x_pos, y=means, yerr=sems, fmt='o', color='black', capsize=5, label='Mean ± SE')
 
-    # 添加 t 检验结果
+ 
     group1 = city_data[city_data['Extreme_Precipitation'] == False]['geaa']
     group2 = city_data[city_data['Extreme_Precipitation'] == True]['geaa']
     if len(group1) > 1 and len(group2) > 1:
@@ -1811,20 +1720,20 @@ for i, city in enumerate(cities):
     ax.grid(True)
     ax.legend()
 
-# --- 2. 每城市 极端温度 vs GEAA ---
+ 
 for i, city in enumerate(cities):
     city_data = df[df[df.columns[0]] == city]
     ax = axes[i + len(cities)]
 
     sns.boxplot(data=city_data, x='Extreme_Temperature', y='geaa', ax=ax, palette="Set2", showfliers=False)
 
-    # 添加误差条
+ 
     means = city_data.groupby('Extreme_Temperature')['geaa'].mean()
     sems = city_data.groupby('Extreme_Temperature')['geaa'].sem()
     x_pos = [0, 1]
     ax.errorbar(x=x_pos, y=means, yerr=sems, fmt='o', color='black', capsize=5, label='Mean ± SE')
 
-    # 添加 t 检验结果
+ 
     group1 = city_data[city_data['Extreme_Temperature'] == False]['geaa']
     group2 = city_data[city_data['Extreme_Temperature'] == True]['geaa']
     if len(group1) > 1 and len(group2) > 1:
@@ -1842,18 +1751,7 @@ for i, city in enumerate(cities):
 plt.tight_layout()
 plt.savefig('Impact_of_extreme_weather_on_GEAA_by_city_with_pvalues.png', dpi=300)
 plt.show()
-# =========================================================
-# Environmental Heterogeneity and GEAA
-# JAMx / High-Level Epidemiology Style
-# =========================================================
-
-# =========================================================
-# LOAD LIBRARIES
-# =========================================================
-
-# =========================================================
-# GLOBAL STYLE
-# =========================================================
+  
 
 plt.rcParams.update({
 
@@ -1878,30 +1776,19 @@ plt.rcParams.update({
 })
 
 sns.set_style("white")
-
-# =========================================================
-# LOAD CLEAN DATASET
-# =========================================================
+ 
 
 df = pd.read_csv("final_analysis_dataset.csv")
 
-# =========================================================
-# CLEAN CATEGORICAL VARIABLES
-# =========================================================
+ 
 
 df["region"] = df["region"].astype(str)
 
-# =========================================================
-# MAIN OUTCOME
-# =========================================================
+ 
 
 OUTCOME = "geaa"
 
-# =========================================================
-# FIGURE 1
-# GEAA DISTRIBUTION BY REGION
-# =========================================================
-
+ 
 fig, ax = plt.subplots(figsize=(8,6))
 
 sns.boxplot(
@@ -1946,10 +1833,9 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# FIGURE 2
+ 
 # TEMPERATURE vs GEAA BY REGION
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(8,6))
 
@@ -1993,10 +1879,9 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
+ 
 # ADJUSTED MAIN MODEL
-# =========================================================
-
+ 
 model = smf.ols(
     """
     geaa ~
@@ -2016,9 +1901,8 @@ model = smf.ols(
 
 print(model.summary())
 
-# =========================================================
-# SAVE REGRESSION RESULTS
-# =========================================================
+ 
+# SAVE REGRESSION RESULTS 
 
 results_df = pd.DataFrame({
 
@@ -2035,9 +1919,9 @@ results_df.to_csv(
     index=False
 )
 
-# =========================================================
+ 
 # REGION-SPECIFIC MODELS
-# =========================================================
+ 
 
 regions = sorted(df["region"].unique())
 
@@ -2084,10 +1968,9 @@ forest_df.to_csv(
 
 print(forest_df)
 
-# =========================================================
-# FIGURE 3
+  # FIGURE 3
 # FOREST PLOT
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(7,5))
 
@@ -2132,19 +2015,14 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# FIGURE 4
-# =========================================================
+ 
 
 fig, axes = plt.subplots(
     2,
     2,
     figsize=(14,10)
 )
-
-# ---------------------------------
-# PANEL A
-# ---------------------------------
+ 
 
 sns.boxplot(
     data=df,
@@ -2156,9 +2034,7 @@ sns.boxplot(
 
 axes[0,0].set_title("A. GEAA by Region")
 
-# ---------------------------------
-# PANEL B
-# ---------------------------------
+ 
 
 sns.scatterplot(
     data=df,
@@ -2171,9 +2047,7 @@ sns.scatterplot(
 
 axes[0,1].set_title("B. Temperature and GEAA")
 
-# ---------------------------------
-# PANEL C
-# ---------------------------------
+ 
 
 sns.scatterplot(
     data=df,
@@ -2186,9 +2060,7 @@ sns.scatterplot(
 
 axes[1,0].set_title("C. PM2.5 and GEAA")
 
-# ---------------------------------
-# PANEL D
-# ---------------------------------
+ 
 
 corr_vars = [
     "Temperature",
@@ -2212,9 +2084,7 @@ sns.heatmap(
 
 axes[1,1].set_title("D. Correlation Matrix")
 
-# ---------------------------------
-# CLEANUP
-# ---------------------------------
+ 
 
 for ax in axes.flatten():
 
@@ -2229,10 +2099,7 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# SUPPLEMENTARY FIGURE
-# EEAA DISTRIBUTION
-# =========================================================
+ 
 
 fig, ax = plt.subplots(figsize=(8,6))
 
@@ -2270,9 +2137,6 @@ plt.savefig(
 
 plt.close()
 
-# =========================================================
-# SUMMARY TABLE
-# =========================================================
 
 summary_table = df.groupby("region")[[
     "Temperature",
@@ -2291,31 +2155,4 @@ summary_table.to_csv(
     "Regional_Summary_Table.csv"
 )
 
-# =========================================================
-# FINAL MESSAGE
-# =========================================================
 
-print("\n====================================")
-print("PUBLICATION FIGURE PIPELINE COMPLETE")
-print("====================================")
-
-print("""
-Generated files:
-
-MAIN FIGURES
--------------
-1. Figure1_GEAA_by_Region.png
-2. Figure2_Temperature_GEAA.png
-3. Figure3_ForestPlot_Temperature_GEAA.png
-4. Figure4_Multipanel_Publication.png
-
-SUPPLEMENTARY
--------------
-5. Supplementary_EEAA_by_Region.png
-
-TABLES
--------------
-6. Adjusted_Model_Results.csv
-7. Region_Specific_Effects.csv
-8. Regional_Summary_Table.csv
-""")
