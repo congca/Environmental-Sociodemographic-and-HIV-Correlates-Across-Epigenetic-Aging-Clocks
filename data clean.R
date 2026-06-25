@@ -1,18 +1,12 @@
-# =========================================================
-# FINAL CLEANING + IMPUTATION PIPELINE
-# =========================================================
+
 
 library(tidyverse)
 
-# =========================================================
-# LOAD DATA
-# =========================================================
+
 
 df <- read_csv("original.csv")
 
-# =========================================================
-# KEEP ONLY VISIT 4
-# =========================================================
+
 
 df <- df %>%
   filter(visit == 4)
@@ -20,23 +14,14 @@ df <- df %>%
 cat("N after visit filtering:\n")
 print(nrow(df))
 
-# =========================================================
-# RENAME REGION VARIABLE
-# =========================================================
 
 df <- df %>%
   rename(region = macsidnumber)
 
-# =========================================================
-# DROP PRECIPITATION
-# =========================================================
 
 df <- df %>%
   select(-Precipitation)
 
-# =========================================================
-# CLEAN TEMPERATURE
-# =========================================================
 
 df$Temperature <- gsub("\\+", "", df$Temperature)
 df$Temperature <- gsub(",", ".", df$Temperature)
@@ -46,9 +31,7 @@ df$Temperature <- as.numeric(df$Temperature)
 # scaling factor correction
 df$Temperature <- df$Temperature / 10
 
-# =========================================================
-# CLEAN ENVIRONMENTAL VARIABLES
-# =========================================================
+
 
 env_vars <- c(
   "SPWPM2.5",
@@ -65,9 +48,7 @@ df <- df %>%
     )
   )
 
-# =========================================================
-# CLEAN AGING VARIABLES
-# =========================================================
+
 
 aging_vars <- c(
   "aar",
@@ -85,9 +66,7 @@ df <- df %>%
     )
   )
 
-# =========================================================
-# CLEAN COVARIATES
-# =========================================================
+
 
 covars <- c(
   "educbas",
@@ -103,9 +82,7 @@ df <- df %>%
     )
   )
 
-# =========================================================
-# CLEAN CATEGORICAL VARIABLES
-# =========================================================
+
 
 df$white <- factor(
   df$white,
@@ -121,9 +98,7 @@ df$hivatvisit <- factor(
 
 df$region <- as.factor(df$region)
 
-# =========================================================
-# KEEP ANALYSIS VARIABLES
-# =========================================================
+
 
 analysis_df <- df %>%
   select(
@@ -145,9 +120,7 @@ analysis_df <- df %>%
     dnamtladjage
   )
 
-# =========================================================
-# MEDIAN IMPUTATION
-# =========================================================
+
 
 numeric_vars <- names(analysis_df)[
   sapply(analysis_df, is.numeric)
@@ -165,9 +138,7 @@ for(v in numeric_vars){
   ] <- median_value
 }
 
-# =========================================================
-# MODE IMPUTATION
-# =========================================================
+
 
 get_mode <- function(x){
   
@@ -195,37 +166,18 @@ for(v in factor_vars){
   ] <- mode_value
 }
 
-# =========================================================
-# QC CHECKS
-# =========================================================
 
-cat("\n========================\n")
-cat("FINAL ANALYTIC N\n")
-cat("========================\n")
 
 print(nrow(analysis_df))
 
-cat("\n========================\n")
-cat("MISSING VALUES\n")
-cat("========================\n")
 
 print(colSums(is.na(analysis_df)))
 
-cat("\n========================\n")
-cat("REGION COUNTS\n")
-cat("========================\n")
-
 print(table(analysis_df$region))
-
-cat("\n========================\n")
-cat("TEMPERATURE SUMMARY\n")
-cat("========================\n")
 
 print(summary(analysis_df$Temperature))
 
-# =========================================================
-# EXPORT CLEAN DATASET
-# =========================================================
+
 
 write_csv(
   analysis_df,
